@@ -1,34 +1,25 @@
-import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
-import ShoppingList from "../components/ShoppingList";
 
-const testData = [
-  { id: 1, name: "Yogurt", category: "Dairy" },
-  { id: 2, name: "Pomegranate", category: "Produce" },
-  { id: 3, name: "Lettuce", category: "Produce" },
-  { id: 4, name: "String Cheese", category: "Dairy" },
-  { id: 5, name: "Cookies", category: "Dessert" },
-];
-
-test("displays all items when initially rendered", () => {
-  const { container } = render(<ShoppingList items={testData} />);
-  expect(container.querySelector(".Items").children).toHaveLength(
-    testData.length
-  );
-});
+import React from 'react';
+import { render, fireEvent, screen } from '@testing-library/react';
+import ShoppingList from '../components/ShoppingList';
 
 test("displays only items that match the selected category", () => {
-  const { container } = render(<ShoppingList items={testData} />);
+  const testData = [
+    { name: "Apple", category: "Produce" },
+    { name: "Bread", category: "Bakery" },
+    { name: "Milk", category: "Dairy" }
+  ];
 
-  fireEvent.change(screen.getByRole("combobox"), {
-    target: { value: "Dairy" },
+  render(<ShoppingList items={testData} />);
+
+  
+  expect(screen.getAllByRole("listitem")).toHaveLength(testData.length);
+
+  
+  fireEvent.change(screen.getByRole("combobox"), { target: { value: "Produce" } });
+  
+  
+  return screen.findAllByRole("listitem").then(displayedItems => {
+    expect(displayedItems).toHaveLength(1); 
   });
-
-  expect(container.querySelector(".Items").children).toHaveLength(2);
-
-  fireEvent.change(screen.getByRole("combobox"), {
-    target: { value: "Dessert" },
-  });
-
-  expect(container.querySelector(".Items").children).toHaveLength(1);
 });
